@@ -8,7 +8,7 @@ class StatusBehavior extends ModelBehavior {
  * @access protected
  */
 	var $settings = array();
-	var $_defaultSettings = array(
+	protected $_defaultSettings = array(
 		'foreignKey' => 'status_id',
 		'statuses' => array(
 			'0'=>'draft',
@@ -24,7 +24,7 @@ class StatusBehavior extends ModelBehavior {
  * @return void
  * @access public
  */
-	function setup(&$Model, $config = array()) {
+	public function setup(&$Model, $config = array()) {
 		$this->settings[$Model->alias] = am ($this->_defaultSettings, $config);
 		if (!isset($Model->includes)) {
 			$Model->includes = array();
@@ -33,7 +33,7 @@ class StatusBehavior extends ModelBehavior {
 		$Model->includes['statuses'] = $this->settings[$Model->alias]['statuses'];
 	}
 	
-	function beforeFind($Model, $queryData) {
+	public function beforeFind($Model, $queryData) {
 		$field = $Model->alias.'.'.$this->settings[$Model->alias]['foreignKey'];
 		if($Model->live && !isset($queryData['conditions'][$field])) {
 			$queryData['conditions'][$field] = 1;
