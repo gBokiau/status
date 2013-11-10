@@ -24,8 +24,8 @@ class StatusBehavior extends ModelBehavior {
  * @return void
  * @access public
  */
-	public function setup(&$Model, $config = array()) {
-		$this->settings[$Model->alias] = am ($this->_defaultSettings, $config);
+	public function setup(Model $Model, $settings = array()) {
+		$this->settings[$Model->alias] = am ($this->_defaultSettings, $settings);
 		if (!isset($Model->includes)) {
 			$Model->includes = array();
 		}
@@ -33,12 +33,12 @@ class StatusBehavior extends ModelBehavior {
 		$Model->includes['statuses'] = $this->settings[$Model->alias]['statuses'];
 	}
 	
-	public function beforeFind($Model, $queryData) {
+	public function beforeFind(Model $Model, $query) {
 		$field = $Model->alias.'.'.$this->settings[$Model->alias]['foreignKey'];
-		if($Model->live && !isset($queryData['conditions'][$field])) {
-			$queryData['conditions'][$field] = 1;
+		if($Model->live && !isset($query['conditions'][$field])) {
+			$query['conditions'][$field] = 1;
 		}
-		return $queryData;
+		return $query;
 	}
 }
 ?>
