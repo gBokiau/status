@@ -35,8 +35,19 @@ class StatusBehavior extends ModelBehavior {
 	
 	public function beforeFind(Model $Model, $query) {
 		$field = $Model->alias.'.'.$this->settings[$Model->alias]['foreignKey'];
-		if($Model->live && !isset($query['conditions'][$field])) {
+		if (!$Model->live) 
+			return $query;
+		if (!isset($query['conditions'][$field])) {
 			$query['conditions'][$field] = 1;
+		}
+		foreach($Model->associations() as $type) {
+			foreach ($Model->{$type} as $assoc => $assocData) {
+				$linkModel = $Model->{$assoc};
+				if (isset($assocData['live'])) {
+					$condition = array($assoc.'.'.$assocData['live'] => '1');
+					$Model->{$type}[$assoc]['conditions'] = array_merge($Model->{$type}[$assoc]['conditions'], $condition);
+				}
+			}
 		}
 		return $query;
 	}
